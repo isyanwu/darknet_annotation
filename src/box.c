@@ -2,7 +2,25 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+/*
+detection和box的定义在include/darknet.h中，具体如下：
 
+typedef struct{
+    float x,y,w,h;    //x,y代表box的中心点，w代表box的宽，h代表box的高。
+} box;
+
+typedef struct detection{
+    box bbox;
+    int classes;
+    float *prob;
+    float *mask;
+    float objectness;
+    int sort_class;
+} detection;
+
+*/
+
+// nms_comparator函数是qsort函数（stdlib.h）的第四个参数，主要用于设定排序的规则，但是还不明白detection.sort_class代表什么？？？？
 int nms_comparator(const void *pa, const void *pb)
 {
     detection a = *(detection *)pa;
@@ -37,7 +55,7 @@ void do_nms_obj(detection *dets, int total, int classes, float thresh)
         dets[i].sort_class = -1;
     }
 
-    qsort(dets, total, sizeof(detection), nms_comparator);
+    qsort(dets, total, sizeof(detection), nms_comparator);//参数一是待排序的元素集合，参数二是元素个数，参数三是元素占用的内存，参数四是排序规则
     for(i = 0; i < total; ++i){
         if(dets[i].objectness == 0) continue;
         box a = dets[i].bbox;
@@ -149,6 +167,7 @@ dbox derivative(box a, box b)
     return d;
 }
 
+//overlap函数返回两个box交集处的矩形的一条边的长度，纸上画张图很容易理解
 float overlap(float x1, float w1, float x2, float w2)
 {
     float l1 = x1 - w1/2;
@@ -160,15 +179,17 @@ float overlap(float x1, float w1, float x2, float w2)
     return right - left;
 }
 
+//box_intersection函数返回两个框的交集处的矩形面积
 float box_intersection(box a, box b)
 {
     float w = overlap(a.x, a.w, b.x, b.w);
     float h = overlap(a.y, a.h, b.y, b.h);
-    if(w < 0 || h < 0) return 0;
+    if(w < 0 || h < 0) return 0; //代表矩形不相交
     float area = w*h;
     return area;
 }
 
+//box_union函数返回两个框的并集处的矩形面积
 float box_union(box a, box b)
 {
     float i = box_intersection(a, b);
@@ -176,10 +197,12 @@ float box_union(box a, box b)
     return u;
 }
 
+//box_iou函数返回两个box的IOU
 float box_iou(box a, box b)
 {
     return box_intersection(a, b)/box_union(a, b);
 }
+
 
 float box_rmse(box a, box b)
 {
@@ -188,6 +211,7 @@ float box_rmse(box a, box b)
                 pow(a.w-b.w, 2) + 
                 pow(a.h-b.h, 2));
 }
+
 
 dbox dintersect(box a, box b)
 {
