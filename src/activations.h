@@ -24,7 +24,7 @@ void gradient_array_gpu(float *x, int n, ACTIVATION a, float *delta);
 #endif
 
 
-//下面都是各种激活函数的具体实现过程
+//下面都是各种激活函数的具体实现过程,过于简单，略
 static inline float stair_activate(float x)
 {
     int n = floor(x);
