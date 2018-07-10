@@ -595,9 +595,9 @@ typedef struct node{
 } node;
 
 typedef struct list{
-    int size;
-    node *front;
-    node *back;
+    int size;  //双向链表的长度
+    node *front;//指向双向链表的头
+    node *back;//指向双向链表尾
 } list;
 
 pthread_t load_data(load_args args);
