@@ -4,6 +4,12 @@
 
 /*双向链表的基本操作函数，list的定义位于include/darknet.h
 即：
+typedef struct node{
+    void *val;
+    struct node *next;
+    struct node *prev;
+} node;
+
 typedef struct list{
     int size;  //双向链表的长度
     node *front;//指向双向链表的头
