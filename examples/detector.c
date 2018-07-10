@@ -5,12 +5,15 @@ static int coco_ids[] = {1,2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18,19,20,21,22,2
 
 void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, int ngpus, int clear)
 {
-    list *options = read_data_cfg(datacfg);
-    char *train_images = option_find_str(options, "train", "data/train.list");
+    list *options = read_data_cfg(datacfg); /*该函数定义在src/option_list.c中，输入为数据集的配置文件，
+                                                返回一个双向链表，每个node都存着key-value结构*/
+    char *train_images = option_find_str(options, "train", "data/train.list");/*该函数定义在src/option_list.c中,
+                                                                                  查找"train"对应的value，
+                                                                                若失败，返回默认值"data/train.list"*/
     char *backup_directory = option_find_str(options, "backup", "/backup/");
 
     srand(time(0));
-    char *base = basecfg(cfgfile);
+    char *base = basecfg(cfgfile);/*该函数定义在src/utils.c,提取字符串信息，例如输入为"a/b/c.jps",输出为"c"*/
     printf("%s\n", base);
     float avg_loss = -1;
     network **nets = calloc(ngpus, sizeof(network));
